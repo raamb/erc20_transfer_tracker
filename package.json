@@ -1,0 +1,22 @@
+{
+  "name": "erc20_transfer_tracker",
+  "version": "1.0.0",
+  "description": "Track all transfers of specified ERC20 token",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raamb/erc20_transfer_tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/raamb/erc20_transfer_tracker/issues"
+  },
+  "homepage": "https://github.com/raamb/erc20_transfer_tracker#readme",
+  "dependencies": {
+    "singularitynet-token-contracts": "^3.0.0"
+  }
+}
