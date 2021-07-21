@@ -1,5 +1,6 @@
 import os
 import time
+import json
 
 from repository import Repository
 from erc20_transfer_handler import ERC20TokenHandler
@@ -119,5 +120,19 @@ class AGIXTransfersHandler(ERC20TokenHandler):
         print(f"Completed reading events till blocknumber {to_block_number}")
         return
 
-tp = AGIXTransfersHandler(INFURA_URL_HTTPS, NET_ID)
-tp.read_events()
+
+def lambda_handler(event, context):
+    status_code = 200
+    message = 'Success'
+    try:
+        tp = AGIXTransfersHandler(INFURA_URL_HTTPS, NET_ID)
+        tp.read_events()
+    except Exception as e:
+        status_code = 500
+        message = repr(e)
+        print(message)
+
+    return {
+        'statusCode': status_code,
+        'body': json.dumps(message)
+    }
