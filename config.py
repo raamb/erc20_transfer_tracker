@@ -5,7 +5,7 @@ DB = {
     "NAME":"",
     "PORT":3306
 }
-#INFURA_URL = "wss://mainnet.infura.io/ws/v3/acacb98cd8d540bcba3ba299ec21fc18"
+
 INFURA_URL = "wss://mainnet.infura.io/ws/v3/"
 INFURA_URL_HTTPS="https://mainnet.infura.io/v3/"
 
