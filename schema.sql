@@ -26,3 +26,16 @@ CREATE TABLE `agix_balances` (
   PRIMARY KEY (`row_id`),
   UNIQUE KEY `address_UNIQUE` (`wallet_address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `agix_snapshot` (
+  `row_id` int NOT NULL AUTO_INCREMENT,
+  `wallet_address` varchar(45) NOT NULL,
+  `is_contract` BIT(1) DEFAULT 0,
+  `balance_in_cogs` bigint DEFAULT NULL,
+  `block_number` bigint DEFAULT NULL,
+  `snapshot_timestamp` timestamp NOT NULL,
+  `row_created` timestamp NULL DEFAULT NULL,
+  `row_updated` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`row_id`),
+  UNIQUE KEY `address_UNIQUE` (`wallet_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

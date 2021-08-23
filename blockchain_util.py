@@ -114,7 +114,7 @@ class BlockChainUtil(object):
         account = self.web3_object.eth.account.create(uuid.uuid4().hex)
         return account.address, account.privateKey.hex()
 
-    def get_current_block_no(self):
+    def __revive_connection(self):
         try:
             connected = self.web3_object.isConnected()
         except ConnectionClosed as e:
@@ -122,6 +122,14 @@ class BlockChainUtil(object):
             connected = False
         if not connected:
             self._initialize_provider()
+        return
+
+    def get_block(self, block_number):
+        self.__revive_connection()
+        return self.web3_object.eth.get_block(block_number)
+
+    def get_current_block_no(self):
+        self.__revive_connection()
         return self.web3_object.eth.blockNumber
 
     def get_transaction(self, transaction_hash):

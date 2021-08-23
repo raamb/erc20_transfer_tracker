@@ -45,17 +45,33 @@ class ERC20TokenHandler():
         return self._blockchain_util.call_contract_function(
             contract=contract, contract_function=method_name, positional_inputs=positional_inputs)
 
-    def _get_events_from_blockchain(self, start_block_number, end_block_number, event_name, argument_filters=None):
-        contract = self._get_contract()
-        event_object = getattr(contract.events, event_name)
-        #argument_filters={'from': from_address}
+    def __get_filtered_events(self,event_object, start_block_number, end_block_number, argument_filters):
         if argument_filters:
             transfer_events = event_object.createFilter(fromBlock=start_block_number,
                                            toBlock=end_block_number, argument_filters=argument_filters)
         else:
             transfer_events = event_object.createFilter(fromBlock=start_block_number,
                                            toBlock=end_block_number)
-        return transfer_events.get_all_entries()
+        return transfer_events
+
+    def _get_events_from_blockchain(self, start_block_number, end_block_number, event_name, argument_filters=None):
+        contract = self._get_contract()
+        all_blockchain_events = []
+        if event_name is None:
+            event_object = contract.events          
+            contract_events = contract.events
+            for attributes in contract_events.abi:
+                if attributes['type'] == 'event':
+                    print(attributes['name'])
+                    event_object = getattr(contract.events, str(attributes['name']))
+                    filtered_events = self.__get_filtered_events(event_object, start_block_number, end_block_number, argument_filters)
+                    all_blockchain_events.extend(filtered_events.get_all_entries())            
+        else:
+            event_object = getattr(contract.events, event_name)
+            filtered_events = self.__get_filtered_events(event_object, start_block_number, end_block_number, argument_filters)
+            all_blockchain_events = filtered_events.get_all_entries() 
+
+        return all_blockchain_events
 
     def _read_contract_events(self, start_block_number, end_block_number, event_name, from_address):
         events = self._get_events_from_blockchain(start_block_number, end_block_number, event_name, from_address)
