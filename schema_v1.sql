@@ -2,7 +2,7 @@ CREATE TABLE `agix_transfers` (
   `row_id` int NOT NULL AUTO_INCREMENT,
   `from_address` varchar(45) DEFAULT NULL,
   `to_address` varchar(45) DEFAULT NULL,
-  `amount_in_cogs` bigint DEFAULT NULL,
+  `amount` bigint DEFAULT NULL,
   `transaction_hash` varchar(256) DEFAULT NULL,
   `block_number` bigint DEFAULT NULL,
   `logIndex` int DEFAULT NULL,
@@ -15,23 +15,25 @@ CREATE TABLE `agix_transfers` (
   UNIQUE KEY `unique_block` (`from_address`,`to_address`,`block_number`,`logIndex`,`transactionIndex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
 CREATE TABLE `agix_balances` (
   `row_id` int NOT NULL AUTO_INCREMENT,
   `wallet_address` varchar(45) NOT NULL,
   `is_contract` BIT(1) DEFAULT 0,
-  `balance_in_cogs` bigint DEFAULT NULL,
+  `amount` bigint DEFAULT NULL,
+  `balance_type` varchar(45) NOT NULL,
   `block_number` bigint DEFAULT NULL,
   `row_created` timestamp NULL DEFAULT NULL,
   `row_updated` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`row_id`),
-  UNIQUE KEY `address_UNIQUE` (`wallet_address`)
+  UNIQUE KEY `address_balance_type_UNIQUE` (`wallet_address`, `balance_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `agix_snapshot` (
   `row_id` int NOT NULL AUTO_INCREMENT,
   `wallet_address` varchar(45) NOT NULL,
   `is_contract` BIT(1) DEFAULT 0,
-  `balance_in_cogs` bigint DEFAULT NULL,
+  `amount` bigint DEFAULT NULL,
   `block_number` bigint DEFAULT NULL,
   `snapshot_timestamp` timestamp NOT NULL,
   `row_created` timestamp NULL DEFAULT NULL,

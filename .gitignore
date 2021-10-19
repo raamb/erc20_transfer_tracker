@@ -133,3 +133,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+config-local.py
+config-mainnet.py

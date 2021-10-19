@@ -9,7 +9,6 @@ class ERC20TokenHandler():
         self._net_id = net_id
         self.__contract = None
         self._contract_file_name = contract_file_name
-        self._contract_name = ""
         self._contract_address = "0x0"
         self._initialize_blockchain()
 
@@ -84,7 +83,6 @@ class ERC20TokenHandler():
         raise Exception("Not implemented get_contract_address")
 
     def _get_balance(self, address):
-        start = time.process_time()
         balance = self._call_contract_function("balanceOf", [Web3.toChecksumAddress(address)])
         #print(f"{(time.process_time() - start)} seconds. Balance of {address} is :: {balance}")
         return balance   

@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/raamb/erc20_transfer_tracker#readme",
   "dependencies": {
+    "@singularitydao/v1-farming-contracts": "^1.0.1",
+    "singularitydao-token-contracts": "^1.0.0",
+    "singularitynet-stake-contracts": "^1.0.0",
     "singularitynet-token-contracts": "^3.0.0"
   }
 }
