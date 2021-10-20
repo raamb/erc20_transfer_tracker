@@ -2,13 +2,13 @@ import json
 
 from config import INFURA_URL_HTTPS, NET_ID
 from agix_staking_processor import AGIXStakingHandler
-from sdao_staking_processor import SDAOStakingHandler
+from sdao_staking_processor import SDAOStakingHandler, SDAO6MonthStakingHandler, SDAOUnbondedStakingHandler
 from agix_transfers_processor import AGIXTransfersProcessor
 from sdao_transfers_processor import SDAOTransfersProcessor
 
 processor_map = {
-    'AGIX': {'TRANSFER': AGIXTransfersProcessor, 'STAKE': AGIXStakingHandler},
-    'SDAO': {'TRANSFER': SDAOTransfersProcessor, 'STAKE': SDAOStakingHandler}
+    'AGIX': {'TRANSFER': AGIXTransfersProcessor, 'STAKE1': AGIXStakingHandler},
+    'SDAO': {'TRANSFER': SDAOTransfersProcessor, 'STAKE1': SDAOStakingHandler, 'STAKE2': SDAO6MonthStakingHandler, 'STAKE3' : SDAOUnbondedStakingHandler}
 }
 
 def response(status, message):

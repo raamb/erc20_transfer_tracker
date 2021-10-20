@@ -9,5 +9,7 @@ npm i singularitynet-stake-contracts
 npm i singularitydao-token-contracts
 npm i @singularitydao/v1-farming-contracts
 
+cp ./SDAOBonded6MonthTokenStake.json ./node_modules/@singularitydao/v1-farming-contracts/networks/
+cp ./node_modules/@singularitydao/v1-farming-contracts/abi/SDAOBondedTokenStake.json ./node_modules/@singularitydao/v1-farming-contracts/abi/SDAOBonded6MonthTokenStake.json
 
 pip install -r requirements.txt
