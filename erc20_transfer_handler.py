@@ -4,18 +4,18 @@ from web3 import Web3
 from blockchain_util import BlockChainUtil
 
 class ERC20TokenHandler():
-    def __init__(self, ws_provider, net_id, contract_file_name):
+    def __init__(self, ws_provider, net_id, contract_file_name, base_contract_path=None):
         self._provider = ws_provider
         self._net_id = net_id
         self.__contract = None
         self._contract_file_name = contract_file_name
         self._contract_address = "0x0"
         self._initialize_blockchain()
+        self._base_contract_path = base_contract_path
 
+    # TODO remove this method
     def _get_base_contract_path(self):
-        pass
-        return ""
-
+        return self._base_contract_path
 
     def _initialize_blockchain(self):
         self.__contract = None
@@ -57,14 +57,14 @@ class ERC20TokenHandler():
         contract = self._get_contract()
         all_blockchain_events = []
         if event_name is None:
-            event_object = contract.events          
             contract_events = contract.events
             for attributes in contract_events.abi:
                 if attributes['type'] == 'event':
-                    print(attributes['name'])
                     event_object = getattr(contract.events, str(attributes['name']))
                     filtered_events = self.__get_filtered_events(event_object, start_block_number, end_block_number, argument_filters)
-                    all_blockchain_events.extend(filtered_events.get_all_entries())            
+                    event_data = filtered_events.get_all_entries()
+                    if len(event_data) > 0:
+                        all_blockchain_events.extend(event_data)            
         else:
             event_object = getattr(contract.events, event_name)
             filtered_events = self.__get_filtered_events(event_object, start_block_number, end_block_number, argument_filters)

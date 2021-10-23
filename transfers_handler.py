@@ -15,7 +15,7 @@ insert_transfers = 'INSERT INTO TABLE_NAME ' + \
 select_block_number = "select max(block_number) as starting_block_number from TABLE_NAME"
 
 class TransfersHandler(ERC20TokenHandler):
-    BATCH_SIZE = 200
+    BATCH_SIZE = 100
 
     def __init__(self, ws_provider, net_id, contract_file_name, balances_table_name, transfers_table_name, amount_key):
         super().__init__(ws_provider, net_id, contract_file_name)
@@ -82,7 +82,7 @@ class TransfersHandler(ERC20TokenHandler):
             value = event['args'][self._amount_key]
             block_number = event['blockNumber']
 
-            print(f"Transfer of {value} cogs from {from_address} to {to_address}")
+            #print(f"Transfer of {value} cogs from {from_address} to {to_address}")
 
             self.__batch_insert([from_address, self._get_is_contract(from_address), self._get_balance(from_address), block_number, block_number], False)
             self.__batch_insert([to_address, self._get_is_contract(to_address), self._get_balance(to_address), block_number, block_number], False)
