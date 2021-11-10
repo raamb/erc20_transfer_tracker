@@ -33,9 +33,10 @@ class TransfersHandler(ERC20TokenHandler):
         self.__populate_seen_contracts()
 
     def __populate_seen_contracts(self):
-        result = self._repository.execute(self._select_block_number)
+        result = self._repository.execute(self._select_contracts)
         self._contracts = []
         for row in result:
+            print(row)
             self._contracts.append(row['wallet_address'])
         print(f"Pre-populated {len(self._contracts)} contract addresses")
 
