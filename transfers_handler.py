@@ -4,15 +4,16 @@ from erc20_transfer_handler import ERC20TokenHandler
 from config import BATCHES_IN_A_RUN, STARTING_BLOCK_NUMBER
 from contract_details import DETAILS
 
-insert_balances = 'INSERT INTO TABLE_NAME ' + \
+select_contracts = 'select wallet_address, is_contract from {TABLE_NAME} where is_contract = 1'
+insert_balances = 'INSERT INTO {TABLE_NAME} ' + \
     '(wallet_address, is_contract, amount, balance_type, balance_sub_type, block_number, row_created, row_updated) ' + \
     'VALUES (%s, %s, %s,\'BALANCE\',\'BALANCE\', %s, current_timestamp, current_timestamp) ' + \
     'ON DUPLICATE KEY UPDATE amount = %s, block_number = %s, row_updated = current_timestamp'
-insert_transfers = 'INSERT INTO TABLE_NAME ' + \
+insert_transfers = 'INSERT INTO {TABLE_NAME} ' + \
 '(from_address, to_address, amount, transaction_hash, block_number, logIndex, transactionIndex, raw_event, row_created, row_updated) ' + \
 'VALUES (%s, %s, %s, %s, %s, %s,%s,%s, current_timestamp, current_timestamp) ' + \
 'ON DUPLICATE KEY UPDATE amount = %s, row_updated = current_timestamp '  
-select_block_number = "select max(block_number) as starting_block_number from TABLE_NAME"
+select_block_number = "select max(block_number) as starting_block_number from {TABLE_NAME}"
 
 class TransfersHandler(ERC20TokenHandler):
     BATCH_SIZE = 100
@@ -21,16 +22,24 @@ class TransfersHandler(ERC20TokenHandler):
         super().__init__(ws_provider, net_id, DETAILS[transfer_type]['contract_file_name'], DETAILS[transfer_type]['contract_path'])
         self._repository = repository
         self._transfer_type = transfer_type
-        self._insert_balances = insert_balances.replace("TABLE_NAME", DETAILS[transfer_type]['balances_table_name'])
-        self._insert_transfers = insert_transfers.replace("TABLE_NAME", DETAILS[transfer_type]['transfers_table_name'])
-        self._select_block_number = select_block_number.replace("TABLE_NAME", DETAILS[transfer_type]['transfers_table_name'])
+        self._select_contracts = select_contracts.format(TABLE_NAME=DETAILS[transfer_type]['balances_table_name'])
+        self._insert_balances = insert_balances.format(TABLE_NAME=DETAILS[transfer_type]['balances_table_name'])
+        self._insert_transfers = insert_transfers.format(TABLE_NAME=DETAILS[transfer_type]['transfers_table_name'])
+        self._select_block_number = select_block_number.format(TABLE_NAME=DETAILS[transfer_type]['transfers_table_name'])
         self._amount_key = DETAILS[transfer_type]['amount_key']
         self._balances = []
         self._transfers = []
+        self._contracts = None
+        self.__populate_seen_contracts()
+
+    def __populate_seen_contracts(self):
+        result = self._repository.execute(self._select_block_number)
         self._contracts = []
+        for row in result:
+            self._contracts.append(row['wallet_address'])
+        print(f"Pre-populated {len(self._contracts)} contract addresses")
 
     def __batch_insert(self, values, is_transfer, force=False):
-        #print(values)
         if is_transfer:
             query = self._insert_transfers
             all_values = self._transfers
