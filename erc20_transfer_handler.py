@@ -19,10 +19,6 @@ class ERC20TokenHandler():
         self._initialize_blockchain()
         
 
-    # TODO remove this method
-    def _get_base_contract_path(self):
-        return self._base_contract_path
-
     def _initialize_blockchain(self):
         self.__contract = None
         if self._provider.startswith('wss://'):
@@ -44,9 +40,8 @@ class ERC20TokenHandler():
         
     def _get_contract(self):
         if not self.__contract:
-            base_contract_path = self._get_base_contract_path()
             self.__contract = self._blockchain_util.get_contract_instance(
-            base_path=base_contract_path, net_id=self._net_id)
+            base_path=self._base_contract_path, net_id=self._net_id)
         return self.__contract
 
     def _call_contract_function(self, method_name, positional_inputs):

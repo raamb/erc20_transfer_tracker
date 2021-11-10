@@ -22,11 +22,9 @@ class UniswapV2TransfersHandler(ERC20TokenHandler):
         self.__populate_yield_farming_address(ws_provider, net_id,DETAILS[transfer_type]['yield_farming_token'])
         self._select_block_number = "select block_number, pool_name from uniswap_v2_tracker where contract_address = %s"
         self._update_block_number = "update uniswap_v2_tracker set block_number = %s, snapshot_timestamp = current_timestamp,row_updated = current_timestamp where contract_address = %s"
-        self._contract_address = ''
         self._pool_name = ''
         self._balances = []
         self._start_block_number = ''
-        self._base_contract_path = DETAILS[transfer_type]['contract_path'] 
         self._pool_index = DETAILS[transfer_type]['pool_index']
 
     ## TODO simplify reading contract address
@@ -37,17 +35,9 @@ class UniswapV2TransfersHandler(ERC20TokenHandler):
                                                       key='address')
         print("**** Yield address " + str(self._yield_farming_handler))
 
-    def set_base_contract_path(self, base_contract_path):
-        self._base_contract_path = base_contract_path        
-
-    def _get_base_contract_path(self):
-       return self._base_contract_path
-
+    
     def _populate_contract_details(self):
         print(f"In populate {self._base_contract_path}")
-        contract_network_path, contract_abi_path  = self._blockchain_util._get_contract_file_paths(self._base_contract_path)
-        self._contract_address = self._blockchain_util.read_contract_address(net_id=self._net_id, path=contract_network_path,
-                                                      key='address')
         result = self._repository.execute(self._select_block_number,[self._contract_address])
         print(result)
         self._pool_name = result[0]['pool_name']

@@ -18,10 +18,6 @@ class SDAOClaimsHandler(ERC20TokenHandler):
         'ON DUPLICATE KEY UPDATE amount_in_cogs = %s, row_updated = current_timestamp '  
         self._transfers = []
 
-   
-    def _get_base_contract_path(self):
-        return os.path.abspath(
-            os.path.join(os.path.dirname(__file__), 'node_modules', 'sdao-token-contracts'))
                
     def __batch_insert(self, values, force=False):
         query = self._insert_transfers

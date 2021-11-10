@@ -28,16 +28,6 @@ class TransfersHandler(ERC20TokenHandler):
         self._balances = []
         self._transfers = []
         self._contracts = []
-        self._base_contract_path = ''
-
-    #TODO remove this
-    def set_base_contract_path(self, base_contract_path):
-        self._base_contract_path = base_contract_path
-
-    #TODO remove this
-    def _get_base_contract_path(self):
-       return DETAILS[self._transfer_type]['contract_path']
-
 
     def __batch_insert(self, values, is_transfer, force=False):
         #print(values)

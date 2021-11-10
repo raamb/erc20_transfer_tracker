@@ -18,7 +18,6 @@ class StakingHandler(ERC20TokenHandler):
         self._insert_balances = insert_balances.format(TABLE_NAME=table_name, STAKE_TYPE=stake_type)
         self._select_existing_stakes = select_existing_stakes.format(TABLE_NAME=table_name)
         self._balances = []
-        self._base_contract_path = ''
         self._stake_map_index = 0
         self._window_total_stake = 0
         self._window_reward_amount = 0
@@ -26,10 +25,7 @@ class StakingHandler(ERC20TokenHandler):
 
     def set_base_contract_path(self, base_contract_path):
         self._base_contract_path = base_contract_path
-        
-    def _get_base_contract_path(self):
-        return self._base_contract_path
-               
+                     
     def _batch_insert(self, values, force=False):
         start = time.process_time()
         number_of_rows = len(self._balances)
