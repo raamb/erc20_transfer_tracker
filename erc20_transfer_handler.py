@@ -3,15 +3,21 @@ import time
 from web3 import Web3
 from blockchain_util import BlockChainUtil
 
+insert_events = 'INSERT INTO raw_events ' + \
+'(block_number, transaction_hash, contract_address, log_index, transaction_index, event_name, raw_event, row_created, row_updated) ' + \
+'VALUES (%s, %s, %s, %s, %s, %s, %s, current_timestamp, current_timestamp) ' + \
+'ON DUPLICATE KEY UPDATE row_updated = current_timestamp'
+
 class ERC20TokenHandler():
-    def __init__(self, ws_provider, net_id, contract_file_name, base_contract_path=None):
+    def __init__(self, ws_provider, net_id, contract_file_name, base_contract_path):
         self._provider = ws_provider
         self._net_id = net_id
         self.__contract = None
         self._contract_file_name = contract_file_name
         self._contract_address = "0x0"
-        self._initialize_blockchain()
         self._base_contract_path = base_contract_path
+        self._initialize_blockchain()
+        
 
     # TODO remove this method
     def _get_base_contract_path(self):
@@ -23,6 +29,10 @@ class ERC20TokenHandler():
             self._blockchain_util = BlockChainUtil(self._provider, self._contract_file_name)
         else:
             self._blockchain_util = BlockChainUtil(self._provider, self._contract_file_name)
+        print("**** PATH " + str(self._base_contract_path))
+        contract_network_path, contract_abi_path  = self._blockchain_util._get_contract_file_paths(self._base_contract_path)
+        self._contract_address = self._blockchain_util.read_contract_address(net_id=self._net_id, path=contract_network_path,
+                                                      key='address')
 
     def _is_contract(self, address):
         is_contract = False
@@ -53,6 +63,10 @@ class ERC20TokenHandler():
                                            toBlock=end_block_number)
         return transfer_events
 
+    def _persist_raw_events(self, event):   
+        #(block_number, tranasction_hash, contract_address, log_index, transaction_index, event_name, raw_event, row_created, row_updated) 
+        self._repository.execute(insert_events,[event['blockNumber'], str(event['transactionHash'].hex()), self._contract_address, event['logIndex'], event['transactionIndex'], event['event'], str(event)])
+
     def _get_events_from_blockchain(self, start_block_number, end_block_number, event_name, argument_filters=None):
         contract = self._get_contract()
         all_blockchain_events = []
@@ -70,6 +84,8 @@ class ERC20TokenHandler():
             filtered_events = self.__get_filtered_events(event_object, start_block_number, end_block_number, argument_filters)
             all_blockchain_events = filtered_events.get_all_entries() 
 
+        for event in all_blockchain_events:
+            self._persist_raw_events(event)
         return all_blockchain_events
 
     def _read_contract_events(self, start_block_number, end_block_number, event_name, from_address):

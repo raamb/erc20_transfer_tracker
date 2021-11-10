@@ -1,13 +1,13 @@
 import time
 
-from repository import Repository
 from erc20_transfer_handler import ERC20TokenHandler
 from config import BATCHES_IN_A_RUN, STARTING_BLOCK_NUMBER
+from contract_details import DETAILS
 
 insert_balances = 'INSERT INTO TABLE_NAME ' + \
     '(wallet_address, is_contract, amount, balance_type, balance_sub_type, block_number, row_created, row_updated) ' + \
     'VALUES (%s, %s, %s,\'BALANCE\',\'BALANCE\', %s, current_timestamp, current_timestamp) ' + \
-    'ON DUPLICATE KEY UPDATE block_number = %s, row_updated = current_timestamp'
+    'ON DUPLICATE KEY UPDATE amount = %s, block_number = %s, row_updated = current_timestamp'
 insert_transfers = 'INSERT INTO TABLE_NAME ' + \
 '(from_address, to_address, amount, transaction_hash, block_number, logIndex, transactionIndex, raw_event, row_created, row_updated) ' + \
 'VALUES (%s, %s, %s, %s, %s, %s,%s,%s, current_timestamp, current_timestamp) ' + \
@@ -17,25 +17,28 @@ select_block_number = "select max(block_number) as starting_block_number from TA
 class TransfersHandler(ERC20TokenHandler):
     BATCH_SIZE = 100
 
-    def __init__(self, ws_provider, net_id, contract_file_name, balances_table_name, transfers_table_name, amount_key):
-        super().__init__(ws_provider, net_id, contract_file_name)
-        self._repository = Repository()
-        self._insert_balances = insert_balances.replace("TABLE_NAME", balances_table_name)
-        self._insert_transfers = insert_transfers.replace("TABLE_NAME", transfers_table_name)
-        self._select_block_number = select_block_number.replace("TABLE_NAME", transfers_table_name)
-        self._amount_key = amount_key
+    def __init__(self, ws_provider, net_id, transfer_type, repository):
+        super().__init__(ws_provider, net_id, DETAILS[transfer_type]['contract_file_name'], DETAILS[transfer_type]['contract_path'])
+        self._repository = repository
+        self._transfer_type = transfer_type
+        self._insert_balances = insert_balances.replace("TABLE_NAME", DETAILS[transfer_type]['balances_table_name'])
+        self._insert_transfers = insert_transfers.replace("TABLE_NAME", DETAILS[transfer_type]['transfers_table_name'])
+        self._select_block_number = select_block_number.replace("TABLE_NAME", DETAILS[transfer_type]['transfers_table_name'])
+        self._amount_key = DETAILS[transfer_type]['amount_key']
         self._balances = []
         self._transfers = []
         self._contracts = []
         self._base_contract_path = ''
 
+    #TODO remove this
     def set_base_contract_path(self, base_contract_path):
         self._base_contract_path = base_contract_path
 
+    #TODO remove this
     def _get_base_contract_path(self):
-       return self._base_contract_path
+       return DETAILS[self._transfer_type]['contract_path']
 
-              
+
     def __batch_insert(self, values, is_transfer, force=False):
         #print(values)
         if is_transfer:
@@ -84,8 +87,10 @@ class TransfersHandler(ERC20TokenHandler):
 
             #print(f"Transfer of {value} cogs from {from_address} to {to_address}")
 
-            self.__batch_insert([from_address, self._get_is_contract(from_address), self._get_balance(from_address), block_number, block_number], False)
-            self.__batch_insert([to_address, self._get_is_contract(to_address), self._get_balance(to_address), block_number, block_number], False)
+            from_balance = self._get_balance(from_address)
+            self.__batch_insert([from_address, self._get_is_contract(from_address), from_balance, block_number, from_balance, block_number], False)
+            to_balance = self._get_balance(to_address)
+            self.__batch_insert([to_address, self._get_is_contract(to_address), to_balance, block_number, to_balance, block_number], False)
 
             self.__batch_insert([from_address, to_address, value, 
                                     str(event['transactionHash'].hex()), block_number, event['logIndex'], 
@@ -101,7 +106,7 @@ class TransfersHandler(ERC20TokenHandler):
         
         return int(starting_block_number)
 
-    def read_events(self):
+    def process(self):
         batch_index = 0
         from_block_number = self._get_starting_block_number()
         end_block_number = self._blockchain_util.get_current_block_no()

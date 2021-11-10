@@ -42,7 +42,7 @@ class StakingHandler(ERC20TokenHandler):
             self._balances.append(tuple(values))
     
     def _update_job_status(self, current_block_number):
-        insert_job_status = 'INSERT INTO job_status ' + \
+        insert_job_status = 'INSERT INTO job_runs ' + \
             '(name, end_block_number, context, row_created, row_updated) ' + \
             'VALUES (%s, %s, %s, current_timestamp, current_timestamp) '
         self._repository.execute(insert_job_status, [self._contract_file_name, current_block_number, None])

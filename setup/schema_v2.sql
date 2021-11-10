@@ -100,3 +100,18 @@ CREATE TABLE `job_runs` (
   `row_updated` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`row_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `raw_events` (
+  `row_id` int NOT NULL AUTO_INCREMENT,
+  `block_number` varchar(45) NOT NULL,
+  `transaction_hash` varchar(128) NOT NULL, 
+  `contract_address` varchar(45) NOT NULL, 
+  `log_index` int DEFAULT NULL,
+  `transaction_index` int DEFAULT NULL,
+  `event_name` varchar(128) NOT NULL,
+  `raw_event` varchar(1054) DEFAULT NULL,
+  `row_created` timestamp NULL DEFAULT NULL,
+  `row_updated` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`row_id`),
+  UNIQUE KEY `unique_block` (`contract_address`, `block_number`,`transaction_hash`, `log_index`,`transaction_index`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

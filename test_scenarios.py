@@ -30,9 +30,15 @@ payload15 = {"token": "SDAO","type": "LPUSDT"}
 #print(lambda_handler(payload4, None))
 #print(lambda_handler(payload5, None))
 
-#print(lambda_handler(payload8, None))
+print(lambda_handler(payload8, None))
 #print(lambda_handler(payload9, None))
+#print(lambda_handler(payload12, None))
+#print(lambda_handler(payload13, None))
+
+#print(lambda_handler(payload6, None))
 #print(lambda_handler(payload7, None))
 #print(lambda_handler(payload10, None))
+#print(lambda_handler(payload11, None))
 
-print(lambda_handler(payload12, None))
+#print(lambda_handler(payload14, None))
+#print(lambda_handler(payload15, None))
