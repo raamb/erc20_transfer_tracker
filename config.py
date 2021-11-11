@@ -8,6 +8,7 @@ DB = {
 
 INFURA_URL = "wss://mainnet.infura.io/ws/v3/"
 INFURA_URL_HTTPS="https://mainnet.infura.io/v3/"
+INFURA_URL_HTTPS_1="https://mainnet.infura.io/v3/"
 
 STARTING_BLOCK_NUMBER=12471031
 NET_ID = 1

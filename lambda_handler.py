@@ -1,17 +1,16 @@
 import json
 import traceback
 
-from config import INFURA_URL_HTTPS, NET_ID
+from config import INFURA_URL_HTTPS, NET_ID, INFURA_URL_HTTPS_1
 from repository import Repository
 from transfers_handler import TransfersHandler
-from agix_staking_processor import AGIXStakingHandler
-from sdao_staking_processor import SDAOStakingHandler, SDAO6MonthStakingHandler, SDAOUnbondedStakingHandler
+from staking_handler import StakingHandler, UnBondedStakingHandler
 from uniswap_event_handler import UniswapV2TransfersHandler
 
 processor_map = {
-    'AGIX': {'TRANSFER': TransfersHandler, 'LPWETH':UniswapV2TransfersHandler, 'LPUSDT':UniswapV2TransfersHandler, 'STAKE1': AGIXStakingHandler},
-    'SDAO': {'TRANSFER': TransfersHandler, 'LPWETH':UniswapV2TransfersHandler, 'LPUSDT':UniswapV2TransfersHandler, 'STAKE1': SDAOStakingHandler, 
-            'STAKE2': SDAO6MonthStakingHandler, 'STAKE3' : SDAOUnbondedStakingHandler}
+    'AGIX': {'TRANSFER': TransfersHandler, 'LPWETH':UniswapV2TransfersHandler, 'LPUSDT':UniswapV2TransfersHandler, 'STAKE1': StakingHandler},
+    'SDAO': {'TRANSFER': TransfersHandler, 'LPWETH':UniswapV2TransfersHandler, 'LPUSDT':UniswapV2TransfersHandler, 'STAKE1': StakingHandler, 
+            'STAKE2': StakingHandler, 'STAKE3' : UnBondedStakingHandler}
 }
 
 def response(status, message):
@@ -39,7 +38,10 @@ def lambda_handler(event, context):
         'VALUES (%s, %s, %s, current_timestamp, current_timestamp) '    
     tp = None
     try:
-        tp = processor_map[token][type](INFURA_URL_HTTPS, NET_ID, transfer_type, repository)
+        infura_url=INFURA_URL_HTTPS
+        if token == 'AGIX':
+            infura_url = INFURA_URL_HTTPS_1        
+        tp = processor_map[token][type](infura_url, NET_ID, transfer_type, repository)
         tp.process()
     except Exception as e:
         traceback.print_exc()

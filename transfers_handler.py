@@ -16,7 +16,7 @@ insert_transfers = 'INSERT INTO {TABLE_NAME} ' + \
 select_block_number = "select max(block_number) as starting_block_number from {TABLE_NAME}"
 
 class TransfersHandler(ERC20TokenHandler):
-    BATCH_SIZE = 100
+    BATCH_SIZE = 200
 
     def __init__(self, ws_provider, net_id, transfer_type, repository):
         super().__init__(ws_provider, net_id, DETAILS[transfer_type]['contract_file_name'], DETAILS[transfer_type]['contract_path'])
@@ -36,7 +36,6 @@ class TransfersHandler(ERC20TokenHandler):
         result = self._repository.execute(self._select_contracts)
         self._contracts = []
         for row in result:
-            print(row)
             self._contracts.append(row['wallet_address'])
         print(f"Pre-populated {len(self._contracts)} contract addresses")
 

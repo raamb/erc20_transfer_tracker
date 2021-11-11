@@ -7,7 +7,7 @@ from config import BATCHES_IN_A_RUN
 from contract_details import DETAILS
 
 class UniswapV2TransfersHandler(ERC20TokenHandler):
-    BATCH_SIZE = 100
+    BATCH_SIZE = 200
 
     def __init__(self,ws_provider, net_id, transfer_type, repository):
         super().__init__(ws_provider, net_id, DETAILS[transfer_type]['contract_file_name'], DETAILS[transfer_type]['contract_path'])
