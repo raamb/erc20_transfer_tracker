@@ -1,5 +1,17 @@
-# erc20_transfer_tracker
-Track all transfers for a given ERC20 token
+# Balances Tracker
+Track 
+* Wallet Balances
+* Staked tokens
+* Liquidity Provisioning
+for all SNet family of tokens. Currently tracks for AGIX and SDAO
+
+# Staking Events
+## Bonded Staking (SDAO and AGIX)
+** SubmitStake - Emitted when user stakes
+** RequestForClaim - Emitted when user opts out or opts in to the next stake window
+** ClaimStake - Emitted when user claims
+** AddReward - Emitted when rewards are compuited in each window
+** WithdrawStake - Emitted when user withdraws before window closes
 
 # Set up
 
@@ -14,4 +26,6 @@ cp ./node_modules/@singularitydao/v1-farming-contracts/abi/SDAOBondedTokenStake.
 
 pip install -r requirements.txt
 
-cp -r uniswap-v2 ./node_modules/
+cp -r setup/uniswap-v2 ./node_modules/
+
+Execute the SQLs in the setup folder on your DB

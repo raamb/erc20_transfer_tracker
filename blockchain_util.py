@@ -30,7 +30,6 @@ class BlockChainUtil(object):
         return self.web3_object.eth.get_code(Web3.toChecksumAddress(address))
 
     def load_contract(self, path):
-        print(path)
         with open(path) as f:
             contract = json.load(f)
         return contract
@@ -139,7 +138,6 @@ class BlockChainUtil(object):
         return self.web3_object.eth.getTransactionReceipt(transaction_hash)
 
     def _get_contract_file_paths(self, base_path):
-        print(f"base_path: {base_path}, contract_file_name: {self._contract_file_name}")
         contract_network_path = base_path + "/{}/{}".format("networks", self._contract_file_name)
         contract_abi_path = base_path + "/{}/{}".format("abi", self._contract_file_name)
 

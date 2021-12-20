@@ -8,6 +8,9 @@ insert_events = 'INSERT INTO raw_events ' + \
 'VALUES (%s, %s, %s, %s, %s, %s, %s, current_timestamp, current_timestamp) ' + \
 'ON DUPLICATE KEY UPDATE row_updated = current_timestamp'
 
+check_event = 'select row_id, transaction_hash from raw_events where block_number = %s and transaction_hash = %s and contract_address = %s and log_index = %s and ' +\
+              'transaction_index = %s and event_name = %s'
+
 class ERC20TokenHandler():
     def __init__(self, ws_provider, net_id, contract_file_name, base_contract_path):
         self._provider = ws_provider
@@ -25,7 +28,6 @@ class ERC20TokenHandler():
             self._blockchain_util = BlockChainUtil(self._provider, self._contract_file_name)
         else:
             self._blockchain_util = BlockChainUtil(self._provider, self._contract_file_name)
-        print("**** PATH " + str(self._base_contract_path))
         contract_network_path, contract_abi_path  = self._blockchain_util._get_contract_file_paths(self._base_contract_path)
         self._contract_address = self._blockchain_util.read_contract_address(net_id=self._net_id, path=contract_network_path,
                                                       key='address')
@@ -97,4 +99,15 @@ class ERC20TokenHandler():
         balance = self._call_contract_function("balanceOf", [Web3.toChecksumAddress(address)])
         #print(f"{(time.process_time() - start)} seconds. Balance of {address} is :: {balance}")
         return balance   
+
+    def _check_event_seen(self, event):
+        event_seen = False
+        result = self._repository.execute(check_event,[event['blockNumber'], str(event['transactionHash'].hex()), self._contract_address, event['logIndex'], event['transactionIndex'], event['event']])
+        if result is not None and len(result) >=1:
+            print(result)
+            print(f"Event {event} seen already with row_id {result[0]['row_id']}")
+            event_seen = True
+        return event_seen
+
+
 

@@ -129,7 +129,11 @@ class UniswapV2TransfersHandler(ERC20TokenHandler):
                     from_block_number, to_block_number, None, None)
                 self._process_events(events)
                 from_block_number = to_block_number
-                self._repository.execute(self._update_block_number,[to_block_number, self._contract_address])
+                
+                seen_block_number = to_block_number
+                if to_block_number > end_block_number:
+                    seen_block_number = end_block_number
+                self._repository.execute(self._update_block_number,[seen_block_number, self._contract_address])
             except Exception as e:
                 raise Exception(f"Excetion {e}. Reinitializing Blockchain")
             

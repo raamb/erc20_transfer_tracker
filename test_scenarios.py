@@ -38,7 +38,16 @@ payload15 = {"token": "SDAO","type": "LPUSDT"}
 #print(lambda_handler(payload6, None))
 #print(lambda_handler(payload7, None))
 #print(lambda_handler(payload10, None))
-print(lambda_handler(payload11, None))
+#print(lambda_handler(payload11, None))
 
 #print(lambda_handler(payload14, None))
 #print(lambda_handler(payload15, None))
+
+from config import INFURA_URL_HTTPS, NET_ID
+from repository import Repository
+from staking_handler import StakingHandler
+
+s = StakingHandler(INFURA_URL_HTTPS, NET_ID, 'AGIX_STAKE1', Repository())
+s.process()
+#u = UniswapV2TransfersHandler(INFURA_URL_HTTPS, NET_ID, 'AGIX_LPWETH', Repository())
+#u.test_address()
